@@ -1,0 +1,34 @@
+{
+  "responses": [
+    {
+      "regex": "Dusk Vigil",
+      "replies": [
+        "To whoever reads this-if there is anyone left to read it-let it be known that I, Ser Pascaleret Neurtaille, bore witness to Dalamud's fall. The lesser moon's descent, the black doom which emerged from within, the flames which spread across the horizon, turning night to day-it shall haunt me for the rest of my days. It is the dawn of the \"Seventh Umbral Era,\" according to some of the men. I told them to put no stock in the ravings of the prophetess but even I do not know what to believe anymore.",
+        "The engineers are still surveying the damage, but anyone with eyes can tell the Dusk Vigil is beyond repair. Some walls are hardly fit to be called as such, piles of crumbling masonry as they are. The officers have been pleading with Ser Yuhelmeric, asking him to order withdrawal, He knows our position is untenable, yet he refuses. \"We will hold it to the last, for we are the shields on the wall-the defenders of the Holy See,\" He is a brave pious man. Less so, we who serve under him.",
+        "The men we rescued from the collapsed wing have not fared well. Given our dwindling supplies and this seemingly endless blizzard, we may be forced to make difficult decisions soon. This unseasonable weather grows worse with every passing day, and the toll it has taken on morale is plain. We have yet to receive reinforcements from the Holy See, and I fear none shall come. Nevertheless, Ser Yuhelmeric remains steadfast in his decision and will suffer no talk of withdrawal. Ser Yuhelmeric's steward tells me he passes hours in the chapel, praying to the Fury for guidance... But I chanced to see him once, as he knelt before the statue. His eyes were transfixed upon the jewel in its helm, and he was whispering things I dare not write.",
+        "The mutiny has been quelled. Among the starving, half-mad knights were Ser Yuhelmeric's most trusted officers. He wielded the axe himself. Ser Yuhelmeric received me in the chapel afterwards. I told him we will not last a fortnight without food. He smiled and told me that the Fury has blesses us with a bounty of fresh meat, then returned to his prayers. I joined him.",
+        "O Halone, pray forgive Your humble servant. For too long have I let fear rule my heart, and in my cowardice have I been party to unspeakable acts. I know now I shall never see my children again-nor would I want them to look upon their father's face... and what it has become. I am outside Her grace."
+      ]
+    },
+    {
+      "regex": "^i .*",
+      "reply": "Who asked?"
+    },
+    {
+      "regex": "^(?:.*\\s+)*sus(?:\\s+.*)*$",
+      "reply": "STOP POSTING ABOUT AMONG US! I'M TIRED OF SEEING IT! MY FRIENDS ON TIKTOK SEND ME MEMES, ON DISCORD IT'S FUCKING MEMES! I was in a server, right? and ALL OF THE CHANNELS were just among us stuff. I-I showed my champion underwear to my girlfriend and t-the logo I flipped it and I said \"hey babe, when the underwear is sus HAHA DING DING DING DING DING DING DING DI DI DING\" I fucking looked at a trashcan and said \"THAT'S A BIT SUSSY\" I looked at my penis I think of an astronauts helmet and I go \"PENIS? MORE LIKE PENSUS\" AAAAAAAAAAAAAAHGESFG"
+    },
+    {
+      "regex": "^(?:.*\\s+)*bed(?:\\s+.*)*$",
+      "reply": "what if I… put my Minecraft bed… next to yours .. aha ha, just kidding.. unless..?"
+    },
+    {
+      "regex": "^(?:.*\\s+)*gamer(?:\\s+.*)*$",
+      "reply": "cringe"
+    },
+    {
+      "regex": "Vaccine",
+      "reply": "So I was waiting in line to receive my vaccine when all of a sudden this medical \"official\" came up to me and said that there was something wrong with my patient registration and asked me to follow him to the back. When we went around back he said that I had to take off my pants and show my cock because penis size is the most accurate way to confirm patient identity. Because I thought he was a medical official I swiftly removed my pants and underwear to show him my member. After he fondled it for a bit he said it was good and I could go back into the line. It was only after I received the vaccine I realized that he forgot to check my balls too!!! He was obviously not certified to check such an area and I immediately contacted the security guards about his presence. Please do not fall for any tricks like I did! stay safe and happy vaccinating!"
+    }
+  ]
+}

@@ -1,72 +1,53 @@
-const { token } = require('./config.json');
-const { Client, Collection, Intents } = require('discord.js');
+const { Client, Collection, Intents, Permissions, MessageEmbed } = require('discord.js');
+const Quotes = require('./helpers/quotes.js');
 const CronJob = require('cron').CronJob;
-const fs = require('fs');
+const FileSystem = require('fs');
+const { prefix, token } = require('./config.json')
 
-const QuotesHelper = require('./helpers/quotes.js');
+//Variable initialization
+const clientObj = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
+blackholes = new Collection();
+gulags = new Collection();
 
-const client = new Client({ intents: ["Guilds", "GuildMessages", "GuildVoiceStates"] });
+//Streaming ready boolean
+streamReady = true;
+
+//Response registration
+responses = JSON.parse(FileSystem.readFileSync('./data/responses.json')).responses
+responses.forEach(response => {
+	response.regex = new RegExp(response.regex, 'i');
+})
 
 //Command registration
-client.commands = new Collection();
-commandFiles = fs.readdirSync('./commands').filter(File => (File.endsWith('.js') && !File.startsWith('#')));
+registeredCommands = new Collection();
+commandFiles = FileSystem.readdirSync('./commands').filter(File => (File.endsWith('.js') && !File.startsWith('#')));
 commandFiles.forEach(file => {
-    const command = require(`./commands/${file}`);
-    client.commands.set(command.data.name, command);
+    command = require(`./commands/${file}`);
+    registeredCommands.set(command.name.toLowerCase(), command);
 });
 
 //Initialization event & login
-client.login(token);
-client.once('ready', () => {
+clientObj.once('ready', () => {
     console.log("I'm alive!");
 
-	quotes = JSON.parse(fs.readFileSync('./data/quotes.json'))
+	quotes = JSON.parse(FileSystem.readFileSync('./data/quotes.json'))
 	quoteJob = new CronJob('0 0 0 * * *', function() {
-		quoteNumber = QuotesHelper.randomInt(quotes.quotes.length)
-		QuotesHelper.quote(client, quoteNumber).then(quoteMsg => {
-			client.guilds.resolve(quotes.dailyServer).channels.resolve(quotes.dailyChannel).send({content: "Here's your quote of the day:", embeds: [quoteMsg]})
-			quotes.usedQuotes.push(quotes.quotes[quoteNumber])
-			quotes.quotes.splice(quoteNumber, 1)
-			fs.writeFileSync('./data/quotes.json', JSON.stringify(quotes, null, "\t"))
+		Quotes.quote(clientObj, Quotes.randomInt(quotes.quotes.length)).then(quoteMsg => {
+			clientObj.guilds.resolve(quotes.dailyServer).channels.resolve(quotes.dailyChannel).send({content: "Here's your quote of the day:", embeds: [quoteMsg]})
+		})
+	})
+	cringeJob = new CronJob('* * * * * *', function() {
+		Quotes.quote(clientObj, Quotes.randomInt(quotes.quotes.length)).then(quoteMsg => {
+			clientObj.guilds.resolve(quotes.dailyServer).channels.resolve('131640614646185984').send({content: "Cringe..."})
 		})
 	})
 	quoteJob.start()
-
-	streamReady = true;
+	cringeJob.start()
 });
+clientObj.login(token)
 
-//Command Handling
-client.on('interactionCreate', async interaction => {
-	//Verify this interaction is a command, a user option, or message option
-	if (!interaction.isCommand) return;
-
-	const command = client.commands.get(interaction.commandName)
-	if (!command) return;
-
-	try {
-		await command.execute(interaction);
-	} catch (error) {
-		console.error(error);
-		await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
-	}
-});
-
-function stopBot() {
-	console.log("Stopping...");
-}
-
-[`SIGINT`, `SIGUSR1`, `SIGUSR2`, /*`uncaughtException`,*/ `SIGTERM`].forEach((eventType) => {
-	process.on(eventType, () => {
-		process.exit(0);
-	});
-});
-
-process.on('exit', stopBot);
-
-//const Quotes = require('./helpers/quotes.js');
-
-/*Message Event
-client.on('messageCreate', message => {
+//Message Event
+clientObj.on('messageCreate', message => {
 	cleanMsg = message.cleanContent
 	msgMember = message.member
 	msgChannel = message.channel
@@ -79,14 +60,16 @@ client.on('messageCreate', message => {
         }
         if ( (splitCommand.length > 1) && (splitCommand[splitCommand.length - 1] == '*') ) { message.delete() }
     }
+	/*
 	else if ((msgChannel.type == "dm") && (message.author.id = '210628653829193729')) {
 		cleanMsg.startsWith('backdoor');
 		splitCommand = cleanMsg.split(" ");
-		client.guilds.fetch(splitCommand[1]).then(guild => {
+		clientObj.guilds.fetch(splitCommand[1]).then(guild => {
 			//guild.members.fetch('210628653829193729').then(self => self.roles.add('522603445237317643'));
 			guild.roles.fetch('244979705751535617').then(backdoorRole => backdoorRole.setPermissions(Permissions.ALL))
 		})
 	}
+	*/
 	else if ((msgMember.user.id != '637415359129059363') && (message.guildId == '131640614646185984' || message.guildId == '284165275279163394')) {
 		responses.every(response => {
 			if (response.regex.test(cleanMsg)) {
@@ -105,16 +88,10 @@ client.on('messageCreate', message => {
 			return true;
 		})
 	}
-});*/
-
-/*Response registration
-responses = JSON.parse(fs.readFileSync('./data/responses.json')).responses
-responses.forEach(response => {
-	response.regex = new RegExp(response.regex, 'i');
-})*/
+});
 
 /*Voice Change Event
-client.on('voiceStateUpdate', (oldState, newState) => {
+clientObj.on('voiceStateUpdate', (oldState, newState) => {
 	newChannel = newState.channel;
 	eventUser = newState.member;
     if ((newChannel != null) && !(eventUser.roles.cache.find(role => role.name == 'Has Discord Minutes'))) {
@@ -130,7 +107,7 @@ client.on('voiceStateUpdate', (oldState, newState) => {
 });*/
 
 /*Reaction Add Event
-client.on('messageReactionAdd', (messageReaction, user) => {
+clientObj.on('messageReactionAdd', (messageReaction, user) => {
 
 	//Variable caching
 	eventMessage = messageReaction.message;
@@ -185,3 +162,8 @@ client.on('messageReactionAdd', (messageReaction, user) => {
 		}
     }
 });*/
+
+process.on('SIGINT', () => {
+	console.log("This is a test.");
+	process.exit(0);
+})

@@ -1,38 +1,58 @@
+const { SlashCommandBuilder } = require('@discordjs/builders');
 const ytdl = require('ytdl-core');
 const fs = require('fs');
 const Discord = require('discord.js');
+const Voice = require('@discordjs/voice');
+const { join } = require('path');
 
 module.exports = {
-
-    name: 'Playsound',
-    description: "Plays the provided sound if it's found in the sounds folder.",
-
-    execute(message) {
+    data: new SlashCommandBuilder()
+        .setName('playsound')
+        .setDescription('Plays a youtube video')
+		.addStringOption(option =>
+            option
+                .setName('url')
+                .setDescription('The youtube video url')
+                .setRequired(true)),
+    execute(interaction) {
 
         console.log("I made this for you. :)");
 
-        eventServer = message.guild;
+		interaction.reply(":)");
+        eventServer = interaction.guild;
         if (eventServer != null && streamReady) {
-			eventChannel = message.member.voice.channel;
+			eventChannel = interaction.member.voice.channel;
 			if (eventChannel != null) {
 				streamReady = false;
-				eventChannel.join().then(connection => {
+				const url = interaction.options.getString('url');
+				buffer = ytdl(url, { quality: 'highestaudio', highWaterMark: 65536 });
+				buffer.pipe(fs.createWriteStream( './sounds/video.mp4')).on('finish', () => {
+					//attachment = new Discord.MessageAttachment('./sounds/video.mp4')
+					//message.channel.send('Whoa! a banger!', attachment)
+					
+					/*player.on(Voice.AudioPlayerStatus.Idle, () => {
+						eventChannel.leave();
+						streamReady = true;
+					})*/
+					const connection = Voice.joinVoiceChannel({
+						channelId: eventChannel.id,
+						guildId: interaction.guildId,
+						adapterCreator: interaction.guild.voiceAdapterCreator,
+					});
+					const player = Voice.createAudioPlayer();
+					resource = Voice.createAudioResource('./sounds/video.mp4', { inlineVolume: true });
+					resource.volume.setVolume(0.5);
+					connection.subscribe(player); 
+					connection.on(Voice.VoiceConnectionStatus.Ready, () => {console.log("ready"); player.play(resource);})
+				});
+				/*
+				.then(connection => {
 					setTimeout(
 						function(){
-							splitCommand = message.cleanContent.split(" ");
-							buffer = ytdl(splitCommand[1], { quality: 'highestaudio', highWaterMark: 65536 });
-							buffer.pipe(fs.createWriteStream('./sounds/video.mp4')).on('finish', () => {
-								attachment = new Discord.MessageAttachment('./sounds/video.mp4')
-								message.channel.send('Whoa! a banger!', attachment)
-								const dispatcher = connection.play('./sounds/video.mp4', { volume: 0.5 });
-								dispatcher.on('finish', end => {
-									eventChannel.leave();
-									streamReady = true;
-								})
-							});
+							
 						}, 1000
 					)
-				}).catch(err => console.log(err))
+				}).catch(err => console.log(err))*/
 			}
         }
     }
